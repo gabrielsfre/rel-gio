@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aniversário com Som</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Bell MT', serif;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    .tela {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .ativa {
+      display: flex;
+    }
+    .tela1 {
+      background-color: #ffe6f0;
+      overflow: hidden;
+    }
+    .bolo {
+      width: 150px;
+      height: 150px;
+      background: white;
+      border-radius: 20px 20px 5px 5px;
+      position: relative;
+      border: 4px solid pink;
+      margin-bottom: 20px;
+    }
+    .bolo::before, .bolo::after {
+      content: "";
+      position: absolute;
+      top: -40px;
+      width: 10px;
+      height: 40px;
+      background: orange;
+      border-radius: 2px;
+    }
+    .bolo::before {
+      left: 40px;
+    }
+    .bolo::after {
+      right: 40px;
+    }
+    .chama::before, .chama::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 12px;
+      background: yellow;
+      top: -50px;
+      border-radius: 50%;
+    }
+    .chama::before {
+      left: 42px;
+    }
+    .chama::after {
+      right: 42px;
+    }
+    .botao {
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: none;
+      font-size: 18px;
+      background-color: #d63384;
+      color: white;
+      cursor: pointer;
+    }
+    .borboleta {
+      position: absolute;
+      font-size: 20px;
+      color: purple;
+      animation: voar 20s linear infinite;
+    }
+    @keyframes voar {
+      0% {transform: translateY(100vh) translateX(0);}
+      100% {transform: translateY(-100vh) translateX(100vw);}
+    }
+    .tela2 {
+      background-color: #f5f5dc;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .calendario {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .dia, .semana {
+      text-align: center;
+      font-size: 20px;
+    }
+    .semana {
+      font-weight: bold;
+    }
+    .vermelho {
+      color: red;
+    }
+    .roxo {
+      background: purple;
+      color: white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+    }
+    .contador {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <audio id="musica" src="musica.mp3" preload="auto" loop></audio>
+
+  <div class="tela tela1 ativa" id="tela1">
+    <div class="bolo chama"></div>
+    <button class="botao" onclick="document.getElementById('musica').play(); mostrarTela2()">clique aqui</button>
+    <script>
+      for (let i = 0; i < 30; i++) {
+        const b = document.createElement('div');
+        b.className = 'borboleta';
+        b.style.left = Math.random() * 100 + 'vw';
+        b.style.top = Math.random() * 100 + 'vh';
+        b.style.animationDuration = (10 + Math.random() * 10) + 's';
+        b.textContent = '🦋';
+        document.getElementById('tela1').appendChild(b);
+      }
+    </script>
+  </div>
+
+  <div class="tela tela2" id="tela2">
+    <h2 style="text-align:center;">Julho 2025</h2>
+    <div class="calendario" id="calendario">
+      <div class="semana">Dom</div>
+      <div class="semana">Seg</div>
+      <div class="semana">Ter</div>
+      <div class="semana">Qua</div>
+      <div class="semana">Qui</div>
+      <div class="semana">Sex</div>
+      <div class="semana">Sáb</div>
+    </div>
+    <div class="contador" id="contador">Carregando contagem...</div>
+  </div>
+
+  <script>
+    function mostrarTela2() {
+      document.getElementById('tela1').classList.remove('ativa');
+      document.getElementById('tela2').classList.add('ativa');
+
+      const calendario = document.getElementById("calendario");
+      const inicio = 2;
+      for (let i = 0; i < inicio; i++) {
+        const vazio = document.createElement("div");
+        calendario.appendChild(vazio);
+      }
+      for (let dia = 1; dia <= 31; dia++) {
+        const div = document.createElement("div");
+        if (dia === 2) {
+          div.className = "dia roxo";
+          div.textContent = dia;
+        } else {
+          div.className = "dia vermelho";
+          div.textContent = "❤️ " + dia;
+        }
+        calendario.appendChild(div);
+      }
+
+      const alvo = new Date("2025-07-02T00:00:00");
+      const contador = document.getElementById("contador");
+      setInterval(() => {
+        const agora = new Date();
+        const diff = alvo - agora;
+        if (diff <= 0) {
+          contador.textContent = "Chegou o dia 2 de julho de 2025! 💜";
+          return;
+        }
+        const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+        contador.textContent = "Faltam " + dias + " dias, " + horas + "h " + minutos + "m " + segundos + "s para 2 de julho de 2025.";
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
